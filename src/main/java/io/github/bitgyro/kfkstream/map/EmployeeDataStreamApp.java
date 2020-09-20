@@ -9,6 +9,7 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.kstream.Produced;
 
 import java.util.Properties;
@@ -19,6 +20,7 @@ public class EmployeeDataStreamApp {
 
         final String INPUT_TOPIC = "employee_data_input";
         final String OUTPUT_TOPIC = "employee_data_output";
+        final String OUTPUT_TOPIC_CASUAL = "casual_employee_data_output";
 
         Properties config = new Properties();
         config.put(StreamsConfig.APPLICATION_ID_CONFIG, "employee_data_stream_app");
@@ -33,7 +35,8 @@ public class EmployeeDataStreamApp {
         KStream<String,String> employeeDataStream = streamsBuilder.stream(INPUT_TOPIC);
 
         employeeDataStream.mapValues(orgSalary -> Long.valueOf(orgSalary)*2)
-                .to(OUTPUT_TOPIC, Produced.with(Serdes.String(),Serdes.Long()));
+                .through(OUTPUT_TOPIC, Produced.with(Serdes.String(),Serdes.Long()))
+        .filter((key, value) -> value < 1000).to(OUTPUT_TOPIC_CASUAL);
 
         KafkaStreams kafkaStreams = new KafkaStreams(streamsBuilder.build(), config);
         kafkaStreams.start();
