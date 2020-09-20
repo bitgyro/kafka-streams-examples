@@ -3,7 +3,7 @@ This project is to explore Kafka Stream Library. The java based streaming applic
 unbounded employee data (k,v) separated by ``,``. 
 The streaming application doubles salary of each message posted to input topic ```employee_data_input```
 and posts it to output topic```employee_data_output```.
-Employees whose salary remains less than 1000 ( post double) will be posted to output topic ```casual_employee_data_output```.
+Employee whose salary remains less than 1000 ( post double) will be posted to output topic ```casual_employee_data_output```.
 
 
 #### Input topic creation
