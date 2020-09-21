@@ -72,8 +72,8 @@ kafka-console-consumer.sh --bootstrap-server localhost:9092 \
                           --value-deserializer "org.apache.kafka.common.serialization.LongDeserializer"   
 ```
 
-#### Console Consumer to render messages from casual_employee_data_output.
-All employees with salary less than 1000 will appear here.
+#### Console Consumer to render messages from casual_employee_data_output_with_below_500_salary.
+All employees with salary < 500 and <= 1000.
 ```
 kafka-console-consumer.sh --bootstrap-server localhost:9092 \
                           --topic casual_employee_data_output_with_below_500_salary  \
@@ -84,8 +84,8 @@ kafka-console-consumer.sh --bootstrap-server localhost:9092 \
                           --value-deserializer "org.apache.kafka.common.serialization.LongDeserializer"   
 ```
 
-#### Console Consumer to render messages from casual_employee_data_output.
-All employees with salary less than 1000 will appear here.
+#### Console Consumer to render messages from casual_employee_data_output_with_above_500_salary.
+All casual employees with salary >= 500 and <= 1000 will appear here.
 ```
 kafka-console-consumer.sh --bootstrap-server localhost:9092 \
                           --topic casual_employee_data_output_with_above_500_salary  \
