@@ -6,10 +6,10 @@ package io.github.bitgyro.kfkstream.map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.kstream.Produced;
 
 import java.util.Properties;
@@ -21,6 +21,8 @@ public class EmployeeDataStreamApp {
         final String INPUT_TOPIC = "employee_data_input";
         final String OUTPUT_TOPIC = "employee_data_output";
         final String OUTPUT_TOPIC_CASUAL = "casual_employee_data_output";
+        final String OUTPUT_TOPIC_CASUAL_ABOVE_500_SALARY = "casual_employee_data_output_with_above_500_salary";
+        final String OUTPUT_TOPIC_CASUAL_BELOW_500_SALARY = "casual_employee_data_output_with_below_500_salary";
 
         Properties config = new Properties();
         config.put(StreamsConfig.APPLICATION_ID_CONFIG, "employee_data_stream_app");
@@ -34,9 +36,16 @@ public class EmployeeDataStreamApp {
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KStream<String,String> employeeDataStream = streamsBuilder.stream(INPUT_TOPIC);
 
-        employeeDataStream.mapValues(orgSalary -> Long.valueOf(orgSalary)*2)
+        KStream<String,Long>[] branches = employeeDataStream.mapValues(orgSalary -> Long.valueOf(orgSalary)*2)
                 .through(OUTPUT_TOPIC, Produced.with(Serdes.String(),Serdes.Long()))
-        .filter((key, value) -> value < 1000).to(OUTPUT_TOPIC_CASUAL);
+                .filter((key, value) -> value < 1000)
+                .map((key, value) -> new KeyValue<>(key.concat("-").concat("CASUAL"),value))
+                .through(OUTPUT_TOPIC_CASUAL,Produced.with(Serdes.String(),Serdes.Long()))
+                .branch((key,value) -> value >= 500 ,
+                        (key,value) -> value < 500);
+
+        branches[0].to(OUTPUT_TOPIC_CASUAL_ABOVE_500_SALARY);
+        branches[1].to(OUTPUT_TOPIC_CASUAL_BELOW_500_SALARY);
 
         KafkaStreams kafkaStreams = new KafkaStreams(streamsBuilder.build(), config);
         kafkaStreams.start();
