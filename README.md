@@ -5,8 +5,8 @@ unbounded employee data (k,v) separated by ``,``.
 and posts it to output topic```employee_data_output```.
 * Employee whose salary remains less than 1000 (post double) will be posted to output topic ```casual_employee_data_output```.
   While posting (k,v) to this topic, "CASUAL" is concatenated to key value.
-* Casual Employees whose salary is below 500 will be posted to casual_employee_data_output_with_below_500_salary topic
-* Casual Employees whose salary is greater than equal to 500 will be posted to casual_employee_data_output_with_above_500_salary  
+* Casual Employees whose salary is below 500 will be posted to topic ```casual_employee_data_output_with_below_500_salary```.
+* Casual Employees whose salary is greater than equal to 500 will be posted to topic ```casual_employee_data_output_with_above_500_salary```.  
 
 #### Input topic creation
 ```
